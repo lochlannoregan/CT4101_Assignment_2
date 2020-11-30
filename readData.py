@@ -13,3 +13,9 @@ beer_train = beer[msk]
 beer_test = beer[~msk]
 print('beer_train lentgh: ', len(beer_train))
 print('beer_test lentgh: ', len(beer_test))
+
+# Seperate the dataset as response variable and feature variables
+X_train = beer_train.drop('style', axis = 1)
+y_train = beer_train['style']
+X_test = beer_test.drop('style', axis = 1)
+y_test = beer_test['style']
