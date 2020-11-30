@@ -4,6 +4,7 @@ import numpy as np
 
 # Loading Data
 beer = pd.read_csv('./data/beer.txt', sep ='\t')
+del beer['beer_id']
 beer.info()
 
 # Partition Data into training and testing
