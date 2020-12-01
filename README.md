@@ -16,4 +16,3 @@
     - hidden_layer_sizes=(9, 12, 9)
         - 3 hidden layers with 9 neurons in the first, 12 in the second etc.
   
-
