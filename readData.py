@@ -32,6 +32,7 @@ def load_data():
 
 
 # REFERENCE ALGORITHM 
+# random alication of data to train and test
 def referance_algorithm(X_train, y_train, X_test, y_test):
     
     # Apply Standard scaling to get better results
