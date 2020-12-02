@@ -15,6 +15,11 @@ def load_data():
     beer.info()
 
     # Partition Data into training and testing
+    # length of beer random numbers, random uniform distribution 0-1
+    # condition < 0.66, returns true for numbers less than .66
+    # meaning a split of about 2/3 true, 1/3 false  
+    # beer[msk] equal to idexes that are true
+    # beer[~msk] not equal to idexes that are true, i.e. indexes that are false
     msk = np.random.rand(len(beer)) < 0.66
     # How do msk and ~msk relate to the numpy random? Why do we negate msk?
     beer_train = beer[msk]
