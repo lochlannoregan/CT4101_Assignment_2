@@ -1,6 +1,7 @@
 # Importing required packages
 import pandas as pd
 import numpy as np
+import mlp_implementation
 
 # sklearn neural network
 from sklearn.neural_network import MLPClassifier
@@ -12,20 +13,16 @@ def load_data():
     # Loading Data
     beer = pd.read_csv('./data/beer.txt', sep='\t')
     del beer['beer_id']
-    beer.info()
 
     # Partition Data into training and testing
     # length of beer random numbers, random uniform distribution 0-1
     # condition < 0.66, returns true for numbers less than .66
-    # meaning a split of about 2/3 true, 1/3 false  
-    # beer[msk] equal to idexes that are true
-    # beer[~msk] not equal to idexes that are true, i.e. indexes that are false
+    # meaning a split of about 2/3 true, 1/3 false
     msk = np.random.rand(len(beer)) < 0.66
-    # How do msk and ~msk relate to the numpy random? Why do we negate msk?
+    # beer[msk] equal to indexes that are true
+    # beer[~msk] not equal to indexes that are true, i.e. indexes that are false
     beer_train = beer[msk]
     beer_test = beer[~msk]
-    print('beer_train length: ', len(beer_train))
-    print('beer_test length: ', len(beer_test))
 
     # Separate the dataset as response variable and feature variables
     X_train = beer_train.drop('style', axis=1)
@@ -54,12 +51,16 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
     print(confusion_matrix(y_test, pred_mlpc))
 
 
-# main function
+def implementation_algorithm(X_train, y_train, X_test, y_test):
+    model = mlp_implementation.init(X_train, y_train, [5, 8])
+
+
 def main():
     X_train, y_train, X_test, y_test = load_data()
 
-    reference_algorithm(X_train, y_train, X_test, y_test)
+    implementation_algorithm(X_train, y_train, X_test, y_test)
 
+    reference_algorithm(X_train, y_train, X_test, y_test)
 
 
 if __name__ == "__main__":
