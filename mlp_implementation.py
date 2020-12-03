@@ -12,6 +12,10 @@ def init(X_train, y_train, hidden_layers_parameters):
     output_layer = generate_output_layer(y_train)
 
     input_data_row(X_train, y_train)
+    
+    for index, row in X_train.iterrows():
+        output = forward_propagation(hidden_layers, row)
+        print(output)
 
 
 def populate_hidden_layers(hidden_layers_parameters):
@@ -50,3 +54,24 @@ def print_network(network):
     # Visually represent it for debugging?
     pass
 
+
+
+
+
+def activation(inputs, weights):
+    outputs = weights[-1]
+    for i in range(len(weights)-1):
+        outputs += np.dot(weights[i], inputs)
+    return outputs
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def forward_propagation(network, inputs):
+    for layer in network:
+        activations = []
+        for neuron in layer:
+            neuron = sigmoid(activation(inputs, neuron))
+            activations.append(neuron)
+        inputs = activations
+    return inputs
