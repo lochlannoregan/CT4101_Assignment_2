@@ -28,7 +28,7 @@ def populate_input_layer(network, X_train):
 
 
 def populate_hidden_layers(network, hidden_layers_parameters):
-    """Creates the hidden layers and calls populatepopulates the weights the weights accordingly
+    """Creates the hidden layers and calls populates the weights the weights accordingly
 
     Args:
         network                  (list): This series of embedded lists represents the network
@@ -69,11 +69,10 @@ def populate_values(number_of_connections, number_of_neurons):
     """
     layer = [number_of_neurons]
     connection_weights = []
-    generator = np.random.default_rng()
     for i in range(number_of_neurons):
         weights = []
         for j in range(number_of_connections):
-            weights.append(generator.random())
+            weights.append(np.random.uniform(-1, 1))
         connection_weights.append(weights)
     layer.append(connection_weights)
     neurons = []
