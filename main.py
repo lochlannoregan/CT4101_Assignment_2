@@ -52,7 +52,7 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
 
 
 def implementation_algorithm(X_train, y_train, X_test, y_test):
-    model = mlp_implementation.init(X_train, y_train, [2, 3, 4])
+    model = mlp_implementation.init(X_train, y_train, [5, 8])
 
 
 def main():

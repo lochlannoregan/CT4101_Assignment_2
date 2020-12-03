@@ -4,70 +4,83 @@ import misc
 
 def init(X_train, y_train, hidden_layers_parameters):
 
-    hidden_layers = populate_hidden_layers(hidden_layers_parameters)
+    # Each sub list of network represents a layer in the network
+    # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
+    network = []
 
-    print(hidden_layers)
+    populate_input_layer(network, X_train)
+    populate_hidden_layers(network, hidden_layers_parameters)
+    populate_output_layer(network, y_train)
 
-    output_layer = populate_output_layer(y_train)
 
-    print(output_layer)
-    
-
-def populate_hidden_layers(hidden_layers_parameters):
-    """Creates the hidden layers and populates the weights the weights accordingly
+def populate_input_layer(network, X_train):
+    """Calculates the number of features and sets it in the input layer in the network
 
     Args:
-        hidden_layers_parameters (list): The lists contains integers representing the number of neurons for a
-                                         corresponding layer
-
-    Returns:
-        list: a list representing the hidden layers containing list(s) with a list of random weights assigned
+        network                  (list): This series of embedded lists represents the network
+        X_train                  (numpy list): The lists contain the actual input training data
     """
-    hidden_layers = []
+    features = []
+    for value in X_train:
+        if value not in features:
+            features.append(value)
+    network.append([len(features)])
+
+
+def populate_hidden_layers(network, hidden_layers_parameters):
+    """Creates the hidden layers and calls populatepopulates the weights the weights accordingly
+
+    Args:
+        network                  (list): This series of embedded lists represents the network
+        hidden_layers_parameters (list): The list contains integers representing the number of neurons for a
+                                         corresponding layer
+    """
     number_of_layers = len(hidden_layers_parameters)
 
     for i in range(number_of_layers):
-        hidden_layers.append(populate_random_weights(hidden_layers_parameters[i]))
+        number_of_connections = network[0+i][0]
+        network.append(populate_values(number_of_connections, hidden_layers_parameters[i]))
 
-    return hidden_layers
 
-
-def populate_output_layer(y_train):
-    """Calculates the number of classes from the output of the training data and populates weights accordingly
+def populate_output_layer(network, y_train):
+    """Calculates the number of classes from the output of the training data and calls populate_values
 
     Args:
-        y_train (numpy list): The lists contains the actual output classifications for all training instances
-
-    Returns:
-        list: a list representing the output layer containing a list with random weights assigned
+        network                  (list): This series of embedded lists represents the networ
+        y_train                  (numpy list): The lists contain the actual output classifications for all training
+                                                instances
     """
     classification_types = []
     for value in y_train:
         if value not in classification_types:
             classification_types.append(value)
-    output_layer = populate_random_weights(len(classification_types))
-    return output_layer
+    network.append(populate_values(network[-1][0], len(classification_types)))
 
 
-def populate_random_weights(number_of_weights):
-    """Populates weights in a list as random values in the range (0,1)
+def populate_values(number_of_connections, number_of_neurons):
+    """Populates number of connections, connection weights, activations and bias in a list
 
     Args:
-        number_of_weights (int): This int specifies how many weights to populate
+        number_of_connections (int): This int specifies how many connections there are to each neuron
+        number_of_neurons     (int): This int specifies how many neurons in this layer
 
     Returns:
-        list: a list representing the layer containing a list with random weights assigned
+        list: a list representing the layer containing a list with values assigned
     """
-    layer = []
-    weights = []
+    layer = [number_of_neurons]
+    connection_weights = []
     generator = np.random.default_rng()
-    for j in range(number_of_weights):
-        weights.append(generator.random())
-    layer.append(weights)
+    for i in range(number_of_neurons):
+        weights = []
+        for j in range(number_of_connections):
+            weights.append(generator.random())
+        connection_weights.append(weights)
+    layer.append(connection_weights)
+    neurons = []
+    for i in range(number_of_neurons):
+        neurons.append(0)
+    bias = 0
+    layer.append(neurons)
+    layer.append(bias)
     return layer
-
-
-def print_network(network):
-    # Visually represent it for debugging?
-    pass
 
