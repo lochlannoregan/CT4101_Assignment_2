@@ -11,9 +11,7 @@ def init(X_train, y_train, hidden_layers_parameters):
     output_layer = populate_output_layer(y_train)
 
     print(output_layer)
-
-    input_data_row(X_train, y_train)
-
+    
 
 def populate_hidden_layers(hidden_layers_parameters):
     """Creates the hidden layers and populates the weights the weights accordingly
@@ -67,10 +65,6 @@ def populate_random_weights(number_of_weights):
         weights.append(generator.random())
     layer.append(weights)
     return layer
-
-
-def input_data_row(input_var, output_var):
-    pass
 
 
 def print_network(network):
