@@ -1,4 +1,5 @@
 # Importing required packages
+from sys import argv
 import pandas as pd
 import numpy as np
 import mlp_implementation
@@ -9,20 +10,40 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.preprocessing import StandardScaler
 
 
-def load_data():
-    # Loading Data
-    beer = pd.read_csv('./data/beer.txt', sep='\t')
-    del beer['beer_id']
+def get_file_sep(file_name):
+    file_extention = file_name.split('.')[-1]
+    if file_extention == "csv":
+        return ','
+    else: 
+        return '\t'
 
+
+def load_data(file):
+
+    file_name = file.split('/')[-1] if "/" in file else file
+    
+    sep = get_file_sep(file_name)
+
+    # Loading Data
+    data = pd.read_csv(file, sep=sep)
+
+
+    if file_name == 'beer.txt':
+        del data['beer_id']
+    
+    return data
+
+
+def minipulate_data(data):
     # Partition Data into training and testing
     # length of beer random numbers, random uniform distribution 0-1
     # condition < 0.66, returns true for numbers less than .66
     # meaning a split of about 2/3 true, 1/3 false
-    msk = np.random.rand(len(beer)) < 0.66
+    msk = np.random.rand(len(data)) < 0.66
     # beer[msk] equal to indexes that are true
     # beer[~msk] not equal to indexes that are true, i.e. indexes that are false
-    beer_train = beer[msk]
-    beer_test = beer[~msk]
+    beer_train = data[msk]
+    beer_test = data[~msk]
 
     # Separate the dataset as response variable and feature variables
     X_train = beer_train.drop('style', axis=1)
@@ -56,7 +77,23 @@ def implementation_algorithm(X_train, y_train, X_test, y_test):
 
 
 def main():
-    X_train, y_train, X_test, y_test = load_data()
+
+    usage = "usage: main.py <file path>"
+
+    input_file = ""
+    
+    if len(argv) == 2:
+        input_file = argv[1]
+    elif len(argv) > 2:
+        print(usage)
+        exit()
+    else:
+        input_file = './data/beer.txt'
+
+
+    data = load_data(input_file)
+
+    X_train, y_train, X_test, y_test = minipulate_data(data)
 
     implementation_algorithm(X_train, y_train, X_test, y_test)
 
