@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 
 def get_file_sep(file_name):
     file_extention = file_name.split('.')[-1]
-    if file_extention == "csv":
+    if file_extention.lower() == "csv":
         return ','
     else: 
         return '\t'
@@ -34,6 +34,15 @@ def load_data(file):
     return data
 
 
+def run(data): 
+    for i in range(10):
+        X_train, y_train, X_test, y_test = minipulate_data(data)
+
+        implementation_algorithm(X_train, y_train, X_test, y_test)
+
+        reference_algorithm(X_train, y_train, X_test, y_test)
+
+
 def minipulate_data(data):
     # Partition Data into training and testing
     # length of beer random numbers, random uniform distribution 0-1
@@ -52,7 +61,6 @@ def minipulate_data(data):
     y_test = beer_test['style']
 
     return X_train, y_train, X_test, y_test
-
 
 
 def reference_algorithm(X_train, y_train, X_test, y_test):
@@ -93,11 +101,8 @@ def main():
 
     data = load_data(input_file)
 
-    X_train, y_train, X_test, y_test = minipulate_data(data)
+    run(data)
 
-    implementation_algorithm(X_train, y_train, X_test, y_test)
-
-    reference_algorithm(X_train, y_train, X_test, y_test)
 
 
 if __name__ == "__main__":
