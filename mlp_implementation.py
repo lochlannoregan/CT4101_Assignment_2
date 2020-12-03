@@ -1,5 +1,5 @@
 import numpy as np
-import misc
+from misc import  forward_propagation
 
 
 def init(X_train, y_train, hidden_layers_parameters):
@@ -12,6 +12,12 @@ def init(X_train, y_train, hidden_layers_parameters):
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
+    for index, row in X_train.iterrows():
+        if index == 0 : # was only looking at the first row
+            forward_propagation(network, row)
+
+    print(network)
+    
 
 def populate_input_layer(network, X_train):
     """Calculates the number of features and sets it in the input layer in the network
