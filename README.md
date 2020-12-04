@@ -1,6 +1,11 @@
 # CT4101_Assignment_2
 
 ## Neural Network Implementation
+- Current hyperparameters
+    - weight initialisation
+        - random values in range 0->1
+    - feature scaling
+        - min-max normalisation in range 0->1
 
 
 ### Activation Function

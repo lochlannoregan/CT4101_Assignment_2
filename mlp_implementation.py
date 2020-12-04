@@ -78,14 +78,14 @@ def populate_values(number_of_connections, number_of_neurons):
     for i in range(number_of_neurons):
         weights = []
         for j in range(number_of_connections):
-            weights.append(np.random.uniform(-1, 1))
+            weights.append(np.random.uniform(0, 1))
         connection_weights.append(weights)
     layer.append(connection_weights)
     neurons = []
     for i in range(number_of_neurons):
         neurons.append(0)
-    bias = 0
+    bias_weight = np.random.uniform(0, 1)
     layer.append(neurons)
-    layer.append(bias)
+    layer.append(bias_weight)
     return layer
 
