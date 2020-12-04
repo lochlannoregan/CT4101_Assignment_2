@@ -52,7 +52,9 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
 
 
 def implementation_algorithm(X_train, y_train, X_test, y_test):
-    model = mlp_implementation.init(X_train, y_train, [5, 8])
+    normalized_X_train = (X_train - X_train.min()) / (X_train.max() - X_train.min())
+
+    model = mlp_implementation.init(normalized_X_train, y_train, [5, 8])
 
 
 def main():
