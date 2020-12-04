@@ -13,8 +13,8 @@ def init(X_train, y_train, hidden_layers_parameters):
     populate_output_layer(network, y_train)
 
     for index, row in X_train.iterrows():
-        if index == 0 : # was only looking at the first row
-            forward_propagation(network, row)
+        outputs = forward_propagation(network, row)
+        print(outputs)
 
     print(network)
     

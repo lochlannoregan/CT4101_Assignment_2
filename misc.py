@@ -20,7 +20,9 @@ def forward_propagation(network, inputs):
             for neuron in layer[1]:
                 neuron_actitive = sigmoid(activation(inputs, neuron))
                 activations.append(neuron_actitive)
-            layer[2] = activations
+            inputs = activations
+            layer[2] = inputs
+    return inputs
 
 
 
