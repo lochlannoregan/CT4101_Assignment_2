@@ -54,7 +54,9 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
 def implementation_algorithm(X_train, y_train, X_test, y_test):
     normalized_X_train = (X_train - X_train.min()) / (X_train.max() - X_train.min())
 
-    model = mlp_implementation.init(normalized_X_train, y_train, [5, 8])
+    y_train_one_hot_encoding = pd.get_dummies(y_train, dtype=float)
+
+    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5, 8])
 
 
 def main():

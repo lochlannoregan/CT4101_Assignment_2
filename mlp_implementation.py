@@ -1,5 +1,5 @@
 import numpy as np
-from misc import  forward_propagation
+from misc import forward_propagation
 
 
 def init(X_train, y_train, hidden_layers_parameters):
@@ -14,17 +14,37 @@ def init(X_train, y_train, hidden_layers_parameters):
 
     for index, row in X_train.iterrows():
         outputs = forward_propagation(network, row)
+        error = calculate_error(network, index, y_train)
         print(outputs)
 
     print(network)
-    
+
+
+def calculate_error(network, index, y_train):
+    """Compares the predicted classification by the model to the actual classification and returns the error
+
+    Args:
+        network                 (list): This series of embedded lists represents the network
+        y_train                 (pandas Series): The lists contain the actual output classifications for all training
+                                                 instances
+
+    Returns:
+        error                   (float): The summed difference of predicted and actual calculated using ???
+    """
+    error = 0.0
+    number_output_neurons = network[-1][0]
+    for neurons in range(number_output_neurons):
+        predicted_value = network[-1][2][neurons]
+        actual_value = y_train.loc[index]
+
+
 
 def populate_input_layer(network, X_train):
     """Calculates the number of features and sets it in the input layer in the network
 
     Args:
         network                  (list): This series of embedded lists represents the network
-        X_train                  (numpy list): The lists contain the actual input training data
+        X_train                  (pandas DataFrame): The lists contain the actual input training data
     """
     features = []
     for value in X_train:
@@ -53,7 +73,7 @@ def populate_output_layer(network, y_train):
 
     Args:
         network                  (list): This series of embedded lists represents the networ
-        y_train                  (numpy list): The lists contain the actual output classifications for all training
+        y_train                  (pandas Series): The lists contain the actual output classifications for all training
                                                 instances
     """
     classification_types = []
