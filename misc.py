@@ -2,9 +2,9 @@ import numpy as np
 
 
 # for forward Propagate  
-def activation(inputs,weights):
-    outputs = weights[-1]
-    for i in range(len(weights)-1):
+def activation(inputs,weights, bais):
+    outputs = bais
+    for i in range(len(weights)):
         outputs += weights[i] * inputs[i]
         # print(outputs)
     return outputs
@@ -18,7 +18,7 @@ def forward_propagation(network, inputs):
         if index != 0:
             activations = []
             for neuron in layer[1]:
-                neuron_actitive = sigmoid(activation(inputs, neuron))
+                neuron_actitive = sigmoid(activation(inputs, neuron, layer[3]))
                 activations.append(neuron_actitive)
             inputs = activations
             layer[2] = inputs
@@ -30,3 +30,5 @@ def forward_propagation(network, inputs):
 # for back Propagate 
 def sigmoid_drivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
+
+# def backward_propagation(network, expected):
