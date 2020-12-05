@@ -12,31 +12,40 @@ def init(X_train, y_train, hidden_layers_parameters):
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
+    count_part_of_error_equation = 0.0
+
     for index, row in X_train.iterrows():
         outputs = forward_propagation(network, row)
-        error = calculate_error(network, index, y_train)
-        print(outputs)
+        # predicted_value = model_prediction(network, y_train)
+        count_part_of_error_equation += calculate_error(network, index, y_train)
+        # print(outputs)
 
-    print(network)
+    error_for_dataset = count_part_of_error_equation / 2
+    print(error_for_dataset)
+
+    # print(network)
 
 
 def calculate_error(network, index, y_train):
+    # Should possibly be softmax or does that replace the activation function on the final layer?
+
     """Compares the predicted classification by the model to the actual classification and returns the error
 
     Args:
         network                 (list): This series of embedded lists represents the network
-        y_train                 (pandas Series): The lists contain the actual output classifications for all training
+        y_train                 (pandas DataFrame): The lists contain the actual output classifications for all training
                                                  instances
 
     Returns:
-        error                   (float): The summed difference of predicted and actual calculated using ???
+        error                   (float): The summed difference of predicted and actual
     """
-    error = 0.0
     number_output_neurons = network[-1][0]
+    sum = 0.0
     for neurons in range(number_output_neurons):
         predicted_value = network[-1][2][neurons]
-        actual_value = y_train.loc[index]
-
+        actual_value = y_train.loc[index][neurons]
+        sum += pow(predicted_value - actual_value, 2)
+    return sum
 
 
 def populate_input_layer(network, X_train):
@@ -52,6 +61,12 @@ def populate_input_layer(network, X_train):
             features.append(value)
     network.append([len(features)])
 
+
+def model_prediction(network, y_train):
+    max_activation = max(network[-1][2])
+    index_of_max_activation = network[-1][2].index(max_activation)
+    prediction = y_train.columns[index_of_max_activation]
+    return prediction
 
 def populate_hidden_layers(network, hidden_layers_parameters):
     """Creates the hidden layers and calls populates the weights the weights accordingly
@@ -73,7 +88,7 @@ def populate_output_layer(network, y_train):
 
     Args:
         network                  (list): This series of embedded lists represents the networ
-        y_train                  (pandas Series): The lists contain the actual output classifications for all training
+        y_train                  (pandas DataFrame): The lists contain the actual output classifications for all training
                                                 instances
     """
     classification_types = []
@@ -98,13 +113,13 @@ def populate_values(number_of_connections, number_of_neurons):
     for i in range(number_of_neurons):
         weights = []
         for j in range(number_of_connections):
-            weights.append(np.random.uniform(0, 1))
+            weights.append(np.random.uniform(0, .1))
         connection_weights.append(weights)
     layer.append(connection_weights)
     neurons = []
     for i in range(number_of_neurons):
         neurons.append(0)
-    bias_weight = np.random.uniform(0, 1)
+    bias_weight = np.random.uniform(0, .1)
     layer.append(neurons)
     layer.append(bias_weight)
     return layer
