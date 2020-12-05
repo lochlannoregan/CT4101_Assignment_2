@@ -1,29 +1,63 @@
 import numpy as np
 from misc import forward_propagation
+from misc import sigmoid_derivative
 
 
-def init(X_train, y_train, hidden_layers_parameters):
+def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
 
     # Each sub list of network represents a layer in the network
     # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
     network = []
 
+    learning_rate = .001
+
+    number_of_epochs = 10
+
     populate_input_layer(network, X_train)
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
-    count_part_of_error_equation = 0.0
+    for epochs in range(number_of_epochs):
+        for index, row in X_train.iterrows():
+            forward_propagation(network, row)
+            calculate_error(network, index, y_train)
+            # stochastic gradient descent where we update the model for each training example
+            derivative_of_weights(network)
+            derivative_of_biases()
+            update_network()
 
-    for index, row in X_train.iterrows():
-        outputs = forward_propagation(network, row)
-        # predicted_value = model_prediction(network, y_train)
-        count_part_of_error_equation += calculate_error(network, index, y_train)
-        # print(outputs)
+    number_of_training_examples = 0
+    number_correct = 0
 
-    error_for_dataset = count_part_of_error_equation / 2
-    print(error_for_dataset)
+    for index, row in X_test.iterrows():
+        number_of_training_examples += 1
+        forward_propagation(network, row)
+        predicted = model_prediction(network, y_test)
+        actual = y_test.loc[index].idxmax()
+        if predicted == actual:
+            correct_boolean = True
+            number_correct += 1
+        else:
+            correct_boolean = False
+        print("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean))
+    print("Accuracy: " + str(number_correct/number_of_training_examples * 100))
 
-    # print(network)
+
+def derivative_of_weights(network):
+    S1 = 0.0
+    delta2 = 1.1
+    # W2_gradients = S1 @ delta2
+
+
+    pass
+
+
+def derivative_of_biases():
+    pass
+
+
+def update_network():
+    pass
 
 
 def calculate_error(network, index, y_train):
@@ -40,12 +74,22 @@ def calculate_error(network, index, y_train):
         error                   (float): The summed difference of predicted and actual
     """
     number_output_neurons = network[-1][0]
-    sum = 0.0
+    output_layer_errors = []
     for neurons in range(number_output_neurons):
         predicted_value = network[-1][2][neurons]
         actual_value = y_train.loc[index][neurons]
-        sum += pow(predicted_value - actual_value, 2)
-    return sum
+        error = (actual_value - predicted_value) * sigmoid_derivative(predicted_value)
+        output_layer_errors.append(error)
+    network[-1][4] = output_layer_errors
+
+    # number_of_hidden_layers = len(network[1:-1])
+    # for hidden_layer in range(1, number_of_hidden_layers + 1):
+    # Code to iterate hidden layers
+    for neurons in range(network[1][0]):
+        for output_neurons in range(number_output_neurons):
+            #error = ( * network[-1][4][output_neurons]) * sigmoid_derivative(network[1][2][neurons])
+            pass
+        pass;
 
 
 def populate_input_layer(network, X_train):
@@ -62,10 +106,10 @@ def populate_input_layer(network, X_train):
     network.append([len(features)])
 
 
-def model_prediction(network, y_train):
+def model_prediction(network, y_test):
     max_activation = max(network[-1][2])
     index_of_max_activation = network[-1][2].index(max_activation)
-    prediction = y_train.columns[index_of_max_activation]
+    prediction = y_test.columns[index_of_max_activation]
     return prediction
 
 def populate_hidden_layers(network, hidden_layers_parameters):
@@ -122,5 +166,7 @@ def populate_values(number_of_connections, number_of_neurons):
     bias_weight = np.random.uniform(0, .1)
     layer.append(neurons)
     layer.append(bias_weight)
+    # adding space for computed errors
+    layer.append([])
     return layer
 

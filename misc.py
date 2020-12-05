@@ -29,4 +29,4 @@ def forward_propagation(network, inputs):
 
 # for back Propagate 
 def sigmoid_derivative(x):
-    return sigmoid(x) * (1 - sigmoid(x))
+    return x * (1.0 - x)
