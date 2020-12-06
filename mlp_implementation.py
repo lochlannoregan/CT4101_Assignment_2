@@ -9,9 +9,9 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
     network = []
 
-    learning_rate = .001
+    learning_rate = .1
 
-    number_of_epochs = 10
+    number_of_epochs = 20
 
     populate_input_layer(network, X_train)
     populate_hidden_layers(network, hidden_layers_parameters)
@@ -24,7 +24,7 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
             # stochastic gradient descent where we update the model for each training example
             derivative_of_weights(network)
             derivative_of_biases()
-            update_network()
+            update_network(network, learning_rate)
 
     number_of_training_examples = 0
     number_correct = 0
@@ -56,8 +56,10 @@ def derivative_of_biases():
     pass
 
 
-def update_network():
-    pass
+def update_network(network, learning_rate):
+    for neurons in range(network[1][0]):
+        for connections in range(len(network[-1][1])):
+            network[-1][1][connections][0] = network[-1][1][connections][0] + (learning_rate * network[1][4][neurons] * network[1][2][neurons])
 
 
 def calculate_error(network, index, y_train):
@@ -78,7 +80,7 @@ def calculate_error(network, index, y_train):
     for neurons in range(number_output_neurons):
         predicted_value = network[-1][2][neurons]
         actual_value = y_train.loc[index][neurons]
-        error = (actual_value - predicted_value) * sigmoid_derivative(predicted_value)
+        error = ((actual_value - predicted_value) * sigmoid_derivative(predicted_value)) / 2
         output_layer_errors.append(error)
     network[-1][4] = output_layer_errors
 
@@ -86,10 +88,12 @@ def calculate_error(network, index, y_train):
     # for hidden_layer in range(1, number_of_hidden_layers + 1):
     # Code to iterate hidden layers
     for neurons in range(network[1][0]):
-        for output_neurons in range(number_output_neurons):
-            #error = ( * network[-1][4][output_neurons]) * sigmoid_derivative(network[1][2][neurons])
-            pass
-        pass;
+        error = 0.0
+        # Having to calculate error in layer by neuron but doesn't seem to count for output layer - that's just the
+        # difference between the output and predicted values so having to reach forward
+        for connections in range(len(network[-1][1])):
+            error += (network[-1][1][connections][0] * network[-1][4][connections]) * sigmoid_derivative(network[1][2][neurons])
+        network[1][4].append(error)
 
 
 def populate_input_layer(network, X_train):
@@ -111,6 +115,7 @@ def model_prediction(network, y_test):
     index_of_max_activation = network[-1][2].index(max_activation)
     prediction = y_test.columns[index_of_max_activation]
     return prediction
+
 
 def populate_hidden_layers(network, hidden_layers_parameters):
     """Creates the hidden layers and calls populates the weights the weights accordingly
