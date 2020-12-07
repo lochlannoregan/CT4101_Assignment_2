@@ -54,11 +54,13 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
 def implementation_algorithm(X_train, y_train, X_test, y_test):
     normalized_X_train = (X_train - X_train.min()) / (X_train.max() - X_train.min())
 
+    normalized_X_test = (X_test - X_test.min()) / (X_test.max() - X_test.min())
+
     y_train_one_hot_encoding = pd.get_dummies(y_train, dtype=float)
 
     y_test_one_hot_encoding = pd.get_dummies(y_test, dtype=float)
 
-    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], X_test, y_test_one_hot_encoding)
+    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], normalized_X_test, y_test_one_hot_encoding)
 
 
 def main():
