@@ -42,7 +42,7 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
     X_test = sc.transform(X_test)
 
     # sklearn neural network
-    mlpc = MLPClassifier(hidden_layer_sizes=(9, 12, 9), max_iter=600)
+    mlpc = MLPClassifier(hidden_layer_sizes=(8), max_iter=600)
     mlpc.fit(X_train, y_train)
     pred_mlpc = mlpc.predict(X_test)
 
