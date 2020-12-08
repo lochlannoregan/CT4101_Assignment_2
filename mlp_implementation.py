@@ -1,6 +1,7 @@
 from misc import forward_propagation
 from misc import sigmoid_derivative
 import random
+import numpy as np
 
 
 def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
@@ -9,7 +10,7 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
     network = []
 
-    learning_rate = .2
+    learning_rate = .07
 
     number_of_epochs = 500
 
@@ -18,10 +19,25 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     populate_output_layer(network, y_train)
 
     for epochs in range(number_of_epochs):
+        sum_error = 0
         for index, row in X_train.iterrows():
-            forward_propagation(network, row)
+            outputs = forward_propagation(network, row)
             calculate_error(network, index, y_train)
             update_network(network, learning_rate, row)
+
+            output_style =""
+            # print(outputs)
+            if np.argmax(outputs) == 0:
+                output_style ="ale" 
+            elif np.argmax(outputs) == 1:
+                output_style ="lager"
+            else:
+                output_style ="stout"
+
+            actual = y_train.loc[index].idxmax()
+            if actual != output_style:
+                sum_error+=1
+        print('>epoch=%d, lrate=%.3f, error=%.3f' % (epochs, learning_rate, sum_error))
 
     number_of_training_examples = 0
     number_correct = 0
