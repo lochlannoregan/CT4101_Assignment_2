@@ -60,7 +60,7 @@ def implementation_algorithm(X_train, y_train, X_test, y_test):
 
     y_test_one_hot_encoding = pd.get_dummies(y_test, dtype=float)
 
-    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], normalized_X_test, y_test_one_hot_encoding)
+    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [1], normalized_X_test, y_test_one_hot_encoding)
 
 
 def main():

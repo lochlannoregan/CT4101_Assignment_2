@@ -1,6 +1,6 @@
-import numpy as np
 from misc import forward_propagation
 from misc import sigmoid_derivative
+import random
 
 
 def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
@@ -9,9 +9,9 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
     network = []
 
-    learning_rate = .1
+    learning_rate = .3
 
-    number_of_epochs = 20
+    number_of_epochs = 500
 
     populate_input_layer(network, X_train)
     populate_hidden_layers(network, hidden_layers_parameters)
@@ -21,10 +21,7 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
         for index, row in X_train.iterrows():
             forward_propagation(network, row)
             calculate_error(network, index, y_train)
-            # stochastic gradient descent where we update the model for each training example
-            derivative_of_weights(network)
-            derivative_of_biases()
-            update_network(network, learning_rate)
+            update_network(network, learning_rate, row)
 
     number_of_training_examples = 0
     number_correct = 0
@@ -43,23 +40,26 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     print("Accuracy: " + str(number_correct/number_of_training_examples * 100))
 
 
-def derivative_of_weights(network):
-    S1 = 0.0
-    delta2 = 1.1
-    # W2_gradients = S1 @ delta2
+def update_network(network, learning_rate, row):
+
+    # print("hi")
+
+    for neurons in range(network[1][0]):
+        for connections in range(network[0][0]):
+            row_value = row[connections]
+            network[1][1][neurons][connections] = network[1][1][neurons][connections] + (learning_rate * network[1][4][neurons] * row[connections])
+        network[1][3][neurons] = network[1][3][neurons] + (learning_rate * network[-1][4][neurons])
 
 
-    pass
-
-
-def derivative_of_biases():
-    pass
-
-
-def update_network(network, learning_rate):
+    # Adjusting weights for output layer
+    # Outer neurons loop probably can get rid of may cause issues for more of these guys
     for neurons in range(network[1][0]):
         for connections in range(len(network[-1][1])):
-            network[-1][1][connections][0] = network[-1][1][connections][0] + (learning_rate * network[1][4][neurons] * network[1][2][neurons])
+            # Might have a problem here accessing connections for more than 1 neuron in hidden layer?
+            # Might have problems here with no += ?
+            network[-1][1][connections][0] = network[-1][1][connections][0] + (learning_rate * network[-1][4][connections] * network[1][2][neurons])
+        # Update bias
+            network[-1][3][connections] = network[-1][3][connections] + (learning_rate * network[-1][4][connections])
 
 
 def calculate_error(network, index, y_train):
@@ -78,9 +78,9 @@ def calculate_error(network, index, y_train):
     number_output_neurons = network[-1][0]
     output_layer_errors = []
     for neurons in range(number_output_neurons):
-        predicted_value = network[-1][2][neurons]
+        model_predicted_value = network[-1][2][neurons]
         actual_value = y_train.loc[index][neurons]
-        error = ((actual_value - predicted_value) * sigmoid_derivative(predicted_value)) / 2
+        error = (actual_value - model_predicted_value) * sigmoid_derivative(model_predicted_value)
         output_layer_errors.append(error)
     network[-1][4] = output_layer_errors
 
@@ -92,8 +92,9 @@ def calculate_error(network, index, y_train):
         # Having to calculate error in layer by neuron but doesn't seem to count for output layer - that's just the
         # difference between the output and predicted values so having to reach forward
         for connections in range(len(network[-1][1])):
-            error += (network[-1][1][connections][0] * network[-1][4][connections]) * sigmoid_derivative(network[1][2][neurons])
-        network[1][4].append(error)
+            error += (network[-1][1][connections][0] * network[-1][4][connections])
+        # See hardcoded number of neurons [0] in hidden layer at end
+        network[1][4].append(error * sigmoid_derivative(network[1][2][0]))
 
 
 def populate_input_layer(network, X_train):
@@ -159,18 +160,19 @@ def populate_values(number_of_connections, number_of_neurons):
     """
     layer = [number_of_neurons]
     connection_weights = []
+    bias_weights = []
     for i in range(number_of_neurons):
         weights = []
         for j in range(number_of_connections):
-            weights.append(np.random.uniform(0, .1))
+            weights.append(random.random())
         connection_weights.append(weights)
+        bias_weights.append(random.random())
     layer.append(connection_weights)
     neurons = []
     for i in range(number_of_neurons):
         neurons.append(0)
-    bias_weight = np.random.uniform(0, .1)
     layer.append(neurons)
-    layer.append(bias_weight)
+    layer.append(bias_weights)
     # adding space for computed errors
     layer.append([])
     return layer
