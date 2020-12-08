@@ -42,7 +42,6 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
 
 def update_network(network, learning_rate, row):
 
-    # print("hi")
     # Adjusting weights for hidden layer
     for neurons in range(network[1][0]):
         for connections in range(network[0][0]):
@@ -55,13 +54,12 @@ def update_network(network, learning_rate, row):
 
 
     # Adjusting weights for output layer
-    for neurons in range(network[1][0]):
-        for connections in range(network[-1][0]):
-            # Will have a problem here accessing connections for more than 1 neuron in hidden layer?
+    for neurons in range(network[-1][0]):
+        for connections in range(network[1][0]):
             # Existing weight + (learning rate * calculated neuron error * input activation from previous layer)
-            network[-1][1][connections][0] = network[-1][1][connections][0] + (learning_rate * network[-1][4][connections] * network[1][2][neurons])
+            network[-1][1][neurons][connections] = network[-1][1][neurons][connections] + (learning_rate * network[-1][4][neurons] * network[1][2][connections])
         # Update bias
-            network[-1][3][connections] = network[-1][3][connections] + (learning_rate * network[-1][4][connections])
+        network[-1][3][neurons] = network[-1][3][neurons] + (learning_rate * network[-1][4][neurons])
 
 
 def calculate_error(network, index, y_train):
