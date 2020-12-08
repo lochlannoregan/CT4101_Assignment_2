@@ -14,24 +14,33 @@ def load_data():
     beer = pd.read_csv('./data/beer.txt', sep='\t')
     del beer['beer_id']
 
-    # # Partition Data into training and testing
-    # # length of beer random numbers, random uniform distribution 0-1
-    # # condition < 0.66, returns true for numbers less than .66
-    # # meaning a split of about 2/3 true, 1/3 false
-    # msk = np.random.rand(len(beer)) < 0.66
-    # # beer[msk] equal to indexes that are true
-    # # beer[~msk] not equal to indexes that are true, i.e. indexes that are false
-    # beer_train = beer[msk]
-    # beer_test = beer[~msk]
+    # Partition Data into training and testing
+    # length of beer random numbers, random uniform distribution 0-1
+    # condition < 0.66, returns true for numbers less than .66
+    # meaning a split of about 2/3 true, 1/3 false
+    msk = np.random.rand(len(beer)) < 0.66
+    # beer[msk] equal to indexes that are true
+    # beer[~msk] not equal to indexes that are true, i.e. indexes that are false
+    beer_train = beer[msk]
+    beer_test = beer[~msk]
 
-    train_set = beer.sample(frac=0.66, random_state=0)
-    test_set = beer.drop(train_set.index)
+    X_train = beer_train.drop('style', axis=1)
+    y_train = beer_train['style']
+    X_test = beer_test.drop('style', axis=1)
+    y_test = beer_test['style']
 
-    # Separate the dataset as response variable and feature variables
-    X_train = train_set.drop('style', axis=1)
-    y_train = train_set['style']
-    X_test = test_set.drop('style', axis=1)
-    y_test = test_set['style']
+
+    # # Not random testing version
+    # train_set = beer.sample(frac=0.66, random_state=0)
+    # test_set = beer.drop(train_set.index)
+    #
+    # # Separate the dataset as response variable and feature variables
+    # X_train = train_set.drop('style', axis=1)
+    # y_train = train_set['style']
+    # X_test = test_set.drop('style', axis=1)
+    # y_test = test_set['style']
+
+
 
     return X_train, y_train, X_test, y_test
 
@@ -63,7 +72,7 @@ def implementation_algorithm(X_train, y_train, X_test, y_test):
 
     y_test_one_hot_encoding = pd.get_dummies(y_test, dtype=float)
 
-    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [1], normalized_X_test, y_test_one_hot_encoding)
+    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], normalized_X_test, y_test_one_hot_encoding)
 
 
 # def read_in_data():
