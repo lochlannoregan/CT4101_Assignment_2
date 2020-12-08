@@ -9,7 +9,7 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
     # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
     network = []
 
-    learning_rate = .3
+    learning_rate = .2
 
     number_of_epochs = 500
 
