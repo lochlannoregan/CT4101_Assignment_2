@@ -43,38 +43,29 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
 def update_network(network, learning_rate, row):
 
     # print("hi")
-
+    # Adjusting weights for hidden layer
     for neurons in range(network[1][0]):
         for connections in range(network[0][0]):
             row_value = row[connections]
+            # Updating connection weight in hidden layer
+            # Existing weight plus (learning rate * calculated error for neuron * value from output layer)
             network[1][1][neurons][connections] = network[1][1][neurons][connections] + (learning_rate * network[1][4][neurons] * row[connections])
-        network[1][3][neurons] = network[1][3][neurons] + (learning_rate * network[-1][4][neurons])
+        # Updating the bias weight adding to existing bias + (learning rate * calculated error for neuron)
+        network[1][3][neurons] = network[1][3][neurons] + (learning_rate * network[1][4][neurons])
 
 
     # Adjusting weights for output layer
-    # Outer neurons loop probably can get rid of may cause issues for more of these guys
     for neurons in range(network[1][0]):
-        for connections in range(len(network[-1][1])):
-            # Might have a problem here accessing connections for more than 1 neuron in hidden layer?
-            # Might have problems here with no += ?
+        for connections in range(network[-1][0]):
+            # Will have a problem here accessing connections for more than 1 neuron in hidden layer?
+            # Existing weight + (learning rate * calculated neuron error * input activation from previous layer)
             network[-1][1][connections][0] = network[-1][1][connections][0] + (learning_rate * network[-1][4][connections] * network[1][2][neurons])
         # Update bias
             network[-1][3][connections] = network[-1][3][connections] + (learning_rate * network[-1][4][connections])
 
 
 def calculate_error(network, index, y_train):
-    # Should possibly be softmax or does that replace the activation function on the final layer?
-
-    """Compares the predicted classification by the model to the actual classification and returns the error
-
-    Args:
-        network                 (list): This series of embedded lists represents the network
-        y_train                 (pandas DataFrame): The lists contain the actual output classifications for all training
-                                                 instances
-
-    Returns:
-        error                   (float): The summed difference of predicted and actual
-    """
+    # Calculate output layer errors
     number_output_neurons = network[-1][0]
     output_layer_errors = []
     for neurons in range(number_output_neurons):
@@ -82,19 +73,25 @@ def calculate_error(network, index, y_train):
         actual_value = y_train.loc[index][neurons]
         error = (actual_value - model_predicted_value) * sigmoid_derivative(model_predicted_value)
         output_layer_errors.append(error)
+    # Setting error for each of output layer neurons
     network[-1][4] = output_layer_errors
 
-    # number_of_hidden_layers = len(network[1:-1])
-    # for hidden_layer in range(1, number_of_hidden_layers + 1):
-    # Code to iterate hidden layers
+
+    # Backpropagation of error for hidden layer
+    hidden_layer_errors = []
     for neurons in range(network[1][0]):
         error = 0.0
-        # Having to calculate error in layer by neuron but doesn't seem to count for output layer - that's just the
-        # difference between the output and predicted values so having to reach forward
+        # As the error is backpropagating from the output layer to the hidden layer have to access the weights from the
+        # reverse direction hence looping over the connection weights from the output layer
         for connections in range(len(network[-1][1])):
-            error += (network[-1][1][connections][0] * network[-1][4][connections])
-        # See hardcoded number of neurons [0] in hidden layer at end
-        network[1][4].append(error * sigmoid_derivative(network[1][2][0]))
+            # Hard coded 0 here after connections - may be issue if more than 1 neuron in hidden layer
+            connection_weight_output_to_hidden = network[-1][1][connections][0]
+            error_in_output_layer_for_neuron = network[-1][4][connections]
+            error += (connection_weight_output_to_hidden * error_in_output_layer_for_neuron)
+        activation_output_current_neuron = network[1][2][neurons]
+        # Setting error for each of hidden layer neurons
+        hidden_layer_errors.append(error * sigmoid_derivative(activation_output_current_neuron))
+    network[1][4] = hidden_layer_errors
 
 
 def populate_input_layer(network, X_train):
