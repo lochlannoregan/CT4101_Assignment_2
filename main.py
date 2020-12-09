@@ -45,7 +45,6 @@ def load_data():
     return X_train, y_train, X_test, y_test
 
 
-
 def reference_algorithm(X_train, y_train, X_test, y_test):
     
     # Apply Standard scaling to get better results
@@ -54,7 +53,7 @@ def reference_algorithm(X_train, y_train, X_test, y_test):
     X_test = sc.transform(X_test)
 
     # sklearn neural network
-    mlpc = MLPClassifier(hidden_layer_sizes=(9, 12, 9), max_iter=600)
+    mlpc = MLPClassifier(hidden_layer_sizes=5, max_iter=600)
     mlpc.fit(X_train, y_train)
     pred_mlpc = mlpc.predict(X_test)
 
@@ -72,28 +71,11 @@ def implementation_algorithm(X_train, y_train, X_test, y_test):
 
     y_test_one_hot_encoding = pd.get_dummies(y_test, dtype=float)
 
-    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], normalized_X_test, y_test_one_hot_encoding)
+    learning_rate = 0.07
+    epochs = 500
 
-
-# def read_in_data():
-#     training_data = []
-#
-#     with open("beer_training.txt", "r") as training_data_file:
-#         for line in training_data_file:
-#             line = line.strip("\n")
-#             line = line.split(\ \\t\ )
-#             training_data_y.append(line[3])
-#             del line[3]
-#             del line[6]
-#             training_data_X.append(line)\
-#     with open(\ beer_test.txt\   \ r\ ) as testing_data_file:
-#         for line in testing_data_file:
-#         line = line.strip(\ \\n\ )
-#         line = line.split(\ \\t\ )
-#         testing_data_y.append(line[3])
-#         del line[3]
-#         del line[6]
-#         testing_data_X.append(line)
+    model = mlp_implementation.init(normalized_X_train, y_train_one_hot_encoding, [5], normalized_X_test,
+                                    y_test_one_hot_encoding, learning_rate, epochs)
 
 
 def main():
@@ -104,7 +86,7 @@ def main():
 
     implementation_algorithm(X_train, y_train, X_test, y_test)
 
-    # reference_algorithm(X_train, y_train, X_test, y_test)
+    reference_algorithm(X_train, y_train, X_test, y_test)
 
 
 if __name__ == "__main__":
