@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 
-def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_rate, epochs):
+def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_rate, epochs, output_file):
     """This init function accepts the parameters and data for running the algorithm before executing the steps to train
     a model, test against the testing dataset and output the results.
 
@@ -28,8 +28,21 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
+    initial_lrate  = learning_rate
+    decay=0.01
+
+    n_zero_errors = 0
+
     for epochs in range(epochs):
         sum_error = 0
+        
+        # For a Dynamic Learning Rate
+        # learning_rate = initial_lrate * (1 / (1 + decay * epochs))
+
+        # if there are 10 epochs with 100% train accuracy in a row, finish training
+        if n_zero_errors == 10 :
+            break
+
         for index, row in X_train.iterrows():
             outputs = forward_propagation(network, row)
             calculate_error(network, index, y_train)
@@ -45,6 +58,8 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
             actual = y_train.loc[index].idxmax()
             if actual != output_style:
                 sum_error += 1
+
+        n_zero_errors += n_zero_errors if sum_error == 0 else 0
 
         print("Epoch: " + str(epochs) + "\t Error: " + str(sum_error))
 
@@ -62,8 +77,14 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
         else:
             correct_boolean = False
         print("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean))
+        output_file.write("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean) + "\n")
     print("Learning Rate: " + str(learning_rate))
-    print("Accuracy: " + str(number_correct/number_of_training_examples * 100))
+    output_file.write("Learning Rate: " + str(learning_rate) + "\n")
+    accuracy = number_correct/number_of_training_examples * 100
+    print("Accuracy: " + str(accuracy))
+    output_file.write("Accuracy: " + str(accuracy)+ "\n\n")
+
+    return accuracy
 
 
 def update_network(network, learning_rate, row):
