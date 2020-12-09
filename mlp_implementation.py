@@ -1,6 +1,9 @@
 import random
 import numpy as np
+import datetime
 import math
+import matplotlib.pyplot as plt
+from cycler import cycler
 
 
 def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_rate, epochs, output_file):
@@ -33,11 +36,13 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
 
     n_zero_errors = 0
 
-    for epochs in range(epochs):
+    learning_accuracys = list()
+
+    for epoch in range(epochs):
         sum_error = 0
         
         # For a Dynamic Learning Rate
-        # learning_rate = initial_lrate * (1 / (1 + decay * epochs))
+        # learning_rate = initial_lrate * (1 / (1 + decay * epoch))
 
         # if there are 10 epochs with 100% train accuracy in a row, finish training
         if n_zero_errors == 10 :
@@ -61,7 +66,14 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
 
         n_zero_errors += n_zero_errors if sum_error == 0 else 0
 
-        print("Epoch: " + str(epochs) + "\t Error: " + str(sum_error))
+        print("Epoch: " + str(epoch) + "\t Error: " + str(sum_error), end='\r')
+
+        accuracy = (len(X_train)- sum_error) / (len(X_train)) * 100
+
+        learning_accuracys.append(accuracy)
+
+    graph_learning_curve(epochs, learning_accuracys)
+
 
     number_of_training_examples = 0
     number_correct = 0
@@ -76,9 +88,7 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
             number_correct += 1
         else:
             correct_boolean = False
-        print("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean))
         output_file.write("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean) + "\n")
-    print("Learning Rate: " + str(learning_rate))
     output_file.write("Learning Rate: " + str(learning_rate) + "\n")
     accuracy = number_correct/number_of_training_examples * 100
     print("Accuracy: " + str(accuracy))
@@ -302,3 +312,24 @@ def sigmoid_derivative(x):
         _                       (float): This value is returned as the output of the calculation
     """
     return x * (1.0 - x)
+
+
+
+def graph_learning_curve(n_epochs, y):
+
+    x = list(range(1, n_epochs+1))
+    y = y
+    
+    plt.rc('axes', prop_cycle=cycler('color', ['r', 'g', 'b', 'y','c', 'm', 'y', 'k']) )
+
+    plt.plot(x, y, linewidth = 1)
+
+    plt.xlim(1,n_epochs) 
+    plt.ylim(1,100)
+
+    plt.xlabel('Iterations')
+    plt.ylabel('Learning Accuracy (%)')
+
+    plt.title('Learning Curve  '+ str(datetime.datetime.now())) 
+    
+    plt.savefig('./data/learning_curve.png')
