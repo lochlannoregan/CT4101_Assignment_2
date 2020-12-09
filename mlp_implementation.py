@@ -316,6 +316,14 @@ def sigmoid_derivative(x):
 
 
 def graph_learning_curve(n_epochs, y):
+    """Graph of the learning curve 
+    Args:
+        n_epochs                (int): the number of epochs
+        y                       (list): the values of the accuracy for each epoch
+
+    Saves:
+        _                       (Fig): This is the Graph of the learning curve
+    """
 
     x = list(range(1, n_epochs+1))
     y = y
