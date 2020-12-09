@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from cycler import cycler
 
 
+# Lochlann & Jack
 def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_rate, epochs, output_file):
     """This init function accepts the parameters and data for running the algorithm before executing the steps to train
     a model, test against the testing dataset and output the results.
@@ -31,21 +32,15 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
-    initial_lrate  = learning_rate
-    decay=0.01
-
     n_zero_errors = 0
 
     learning_accuracys = list()
 
     for epoch in range(epochs):
         sum_error = 0
-        
-        # For a Dynamic Learning Rate
-        # learning_rate = initial_lrate * (1 / (1 + decay * epoch))
 
         # if there are 10 epochs with 100% train accuracy in a row, finish training
-        if n_zero_errors == 10 :
+        if n_zero_errors == 10:
             break
 
         for index, row in X_train.iterrows():
@@ -74,7 +69,6 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
 
     graph_learning_curve(epochs, learning_accuracys)
 
-
     number_of_training_examples = 0
     number_correct = 0
 
@@ -91,12 +85,13 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_ra
         output_file.write("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean) + "\n")
     output_file.write("Learning Rate: " + str(learning_rate) + "\n")
     accuracy = number_correct/number_of_training_examples * 100
-    print("Accuracy: " + str(accuracy))
-    output_file.write("Accuracy: " + str(accuracy)+ "\n\n")
+    print("\t\tAccuracy: " + str(accuracy))
+    output_file.write("Accuracy: " + str(accuracy) + "\n\n")
 
     return accuracy
 
 
+# Lochlann O'Regan 17316753
 def update_network(network, learning_rate, row):
     """Updates the network layers, weights and biases having calculated the error
 
@@ -125,6 +120,7 @@ def update_network(network, learning_rate, row):
         network[-1][3][neurons] = network[-1][3][neurons] + (learning_rate * network[-1][4][neurons])
 
 
+# Lochlann & Jack
 def calculate_error(network, index, y_train):
     """Calculates the error for the output layer and also backpropagates error to the hidden layer
 
@@ -163,6 +159,7 @@ def calculate_error(network, index, y_train):
     network[1][4] = hidden_layer_errors
 
 
+# Lochlann O'Regan 17316753
 def populate_input_layer(network, X_train):
     """Calculates the number of features and sets it in the input layer in the network
 
@@ -177,6 +174,7 @@ def populate_input_layer(network, X_train):
     network.append([len(features)])
 
 
+# Lochlann O'Regan 17316753
 def model_prediction(network, y_test):
     """Returns the prediction by the trained model having passed through a test data row
 
@@ -192,6 +190,7 @@ def model_prediction(network, y_test):
     return prediction
 
 
+# Lochlann O'Regan 17316753
 def populate_hidden_layers(network, hidden_layers_parameters):
     """Creates the hidden layers and calls populate_values to populate the weights accordingly
 
@@ -207,6 +206,7 @@ def populate_hidden_layers(network, hidden_layers_parameters):
         network.append(populate_values(number_of_connections, hidden_layers_parameters[i]))
 
 
+# Lochlann O'Regan 17316753
 def populate_output_layer(network, y_train):
     """Calculates the number of classes from the output of the training data and calls populate_values
 
@@ -221,6 +221,7 @@ def populate_output_layer(network, y_train):
     network.append(populate_values(network[-1][0], len(classification_types)))
 
 
+# Lochlann O'Regan 17316753
 def populate_values(number_of_connections, number_of_neurons):
     """Populates number of connections, connection weights, activations and bias into the network
 
@@ -251,6 +252,7 @@ def populate_values(number_of_connections, number_of_neurons):
     return layer
 
 
+# Jack Lynch 17370591
 def activation(inputs, weights, bias):
     """Summation of weights times inputs including bias to calculate activation of a neuron
 
@@ -269,6 +271,7 @@ def activation(inputs, weights, bias):
     return outputs
 
 
+# Jack Lynch 17370591
 def sigmoid(x):
     """Passes the supplied value through the non-linear sigmoid function
 
@@ -281,6 +284,7 @@ def sigmoid(x):
     return 1/(1+math.exp(-x))
 
 
+# Jack Lynch 17370591
 def forward_propagation(network, inputs):
     """Enumerates the network and sums the inputs, weights and biases before passing them through a non-linear
     activation function to calculate the activation of neurons having passed an input through the network
@@ -303,6 +307,7 @@ def forward_propagation(network, inputs):
     return inputs
 
 
+# Jack Lynch 17370591
 def sigmoid_derivative(x):
     """Derivative of the sigmoid function calculation
     Args:
@@ -314,7 +319,7 @@ def sigmoid_derivative(x):
     return x * (1.0 - x)
 
 
-
+# Jack Lynch 17370591
 def graph_learning_curve(n_epochs, y):
 
     x = list(range(1, n_epochs+1))
@@ -330,6 +335,6 @@ def graph_learning_curve(n_epochs, y):
     plt.xlabel('Iterations')
     plt.ylabel('Learning Accuracy (%)')
 
-    plt.title('Learning Curve  '+ str(datetime.datetime.now())) 
-    
+    plt.title('Learning Curve  ' + str(datetime.datetime.now()))
+
     plt.savefig('./data/learning_curve.png')

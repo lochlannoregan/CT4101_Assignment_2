@@ -12,14 +12,16 @@ from sklearn.metrics import confusion_matrix, classification_report, accuracy_sc
 from sklearn.preprocessing import StandardScaler
 
 
+# Jack Lynch 17370591
 def get_file_sep(file_name):
-    file_extention = file_name.split('.')[-1]
-    if file_extention.lower() == "csv":
+    file_extension = file_name.split('.')[-1]
+    if file_extension.lower() == "csv":
         return ','
     else: 
         return '\t'
 
 
+# Jack Lynch 17370591
 def load_data(file):
 
     file_name = file.split('/')[-1] if "/" in file else file
@@ -35,7 +37,8 @@ def load_data(file):
     return data
 
 
-def minipulate_data(data):
+# Jack Lynch 17370591
+def manipulate_data(data):
     # Partition Data into training and testing
     # length of beer random numbers, random uniform distribution 0-1
     # condition < 0.66, returns true for numbers less than .66
@@ -52,22 +55,10 @@ def minipulate_data(data):
     X_test = data_test.drop('style', axis=1)
     y_test = data_test['style']
 
-
-    # # Not random testing version
-    # train_set = beer.sample(frac=0.66, random_state=0)
-    # test_set = beer.drop(train_set.index)
-    #
-    # # Separate the dataset as response variable and feature variables
-    # X_train = train_set.drop('style', axis=1)
-    # y_train = train_set['style']
-    # X_test = test_set.drop('style', axis=1)
-    # y_test = test_set['style']
-
-
-
     return X_train, y_train, X_test, y_test
 
 
+# Jack Lynch 17370591
 def reference_algorithm(X_train, y_train, X_test, y_test, output_file):
     
     # Apply Standard scaling to get better results
@@ -80,13 +71,18 @@ def reference_algorithm(X_train, y_train, X_test, y_test, output_file):
     mlpc.fit(X_train, y_train)
     pred_mlpc = mlpc.predict(X_test)
 
+    accuracy = str(accuracy_score(y_test, pred_mlpc) * 100)
+
     # print the models performance
-    print("Accuracy: " + str(accuracy_score(y_test, pred_mlpc) * 100))
-    output_file.write("Accuracy: " + str(accuracy_score(y_test, pred_mlpc) * 100) + "\n")
+    print("\t\tAccuracy: " + accuracy)
+    output_file.write("Accuracy: " + accuracy + "\n")
     output_file.write(str(classification_report(y_test, pred_mlpc)) + "\n")
     output_file.write(str(confusion_matrix(y_test, pred_mlpc)) + "\n\n")
 
+    return accuracy
 
+
+# Lochlann O'Regan 17316753
 def implementation_algorithm(X_train, y_train, X_test, y_test, output_file):
     normalized_X_train = (X_train - X_train.min()) / (X_train.max() - X_train.min())
 
@@ -105,7 +101,7 @@ def implementation_algorithm(X_train, y_train, X_test, y_test, output_file):
     return model_accuracy
 
 
-
+# Jack Lynch 17370591
 def graph_model_accuracy(accuracies):
 
     x = list(range(1, 11))
@@ -126,47 +122,54 @@ def graph_model_accuracy(accuracies):
     
     ax.figure.savefig('./data/accuracies.png')
 
-    print("Graph of Accurasscy over 10 runs: ./data/accuracies.png")
+    print("Graph of Accuracies over 10 runs: ./data/accuracies.png")
 
 
-
-
+# Jack Lynch 17370591
 def run(data): 
 
     output_file_path = './data/data_output.txt'
     output_file = open(output_file_path, "w")
     output_file.write(str(datetime.datetime.now()) + "\n")
     
-    accuracys = []
+    implementation_accuracies = []
+    reference_accuracies = []
+
+    print("Model training and testing process begun... (Note: From our testing on our systems each iteration takes "
+          "approx. 30 seconds)\n")
 
     for i in range(10):
 
-        print("Iteration {}".format(i) )
-        output_file.write("Iteration {} \n".format(i) )
+        print("Iteration {}".format(i))
+        output_file.write("Iteration {} \n".format(i))
 
-        X_train, y_train, X_test, y_test = minipulate_data(data)
+        X_train, y_train, X_test, y_test = manipulate_data(data)
 
-        print("implementation_algorithm")
+        print("\tImplementation Algorithm:")
         output_file.write("implementation_algorithm \n")
         model_accuracy = implementation_algorithm(X_train, y_train, X_test, y_test, output_file)
-        accuracys.append(model_accuracy)
+        implementation_accuracies.append(model_accuracy)
 
-        print("reference_algorithm")
+        print("\tReference Algorithm:")
         output_file.write("reference_algorithm \n")
-        reference_algorithm(X_train, y_train, X_test, y_test, output_file)
+        reference_accuracy = reference_algorithm(X_train, y_train, X_test, y_test, output_file)
+        reference_accuracies.append(reference_accuracy)
     
     print("Graph of Learning Curve: ./data/learning_curve.png")
     output_file.write("Graph of Learning Curve: ./data/learning_curve.png \n")
 
-    graph_model_accuracy(accuracys)
-    output_file.write("Graph of Accurasscy over 10 runs: ./data/accuracies.png \n")
+    graph_model_accuracy(implementation_accuracies)
+    output_file.write("Graph of Accuracies over 10 runs: ./data/accuracies.png \n")
 
-    print("writien to file: {} \n".format(output_file_path))
+    output_file.write("\nImplementation Accuracy over 10 runs: " + str(np.mean(implementation_accuracies)))
+    output_file.write("\nReference Accuracy over 10 runs: " + str(np.mean(float(reference_accuracy))))
+
+    print("Path to file: {} \n".format(output_file_path))
 
     output_file.close()
 
 
-
+# Jack Lynch 17370591
 def main():
    
     usage = "usage: main.py <file path>"
@@ -180,7 +183,6 @@ def main():
         exit()
     else:
         input_file = './data/beer.txt'
-
 
     data = load_data(input_file)
 
