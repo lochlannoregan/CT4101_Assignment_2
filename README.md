@@ -1,6 +1,9 @@
 # CT4101_Assignment_2
 
 ## Get started
+- Usage:
+    - main.py \<file path>
+    - Or don't specify a file and will automatically use the provided beer.txt file in data/beer.txt
 - Python version for development
     - Python 3.8
 - The following libraries and versions through pip are required as of December 2020 to execute this code:
