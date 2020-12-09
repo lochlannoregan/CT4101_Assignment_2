@@ -1,43 +1,52 @@
-from misc import forward_propagation
-from misc import sigmoid_derivative
 import random
 import numpy as np
+import math
 
 
-def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
+def init(X_train, y_train, hidden_layers_parameters, X_test, y_test, learning_rate, epochs):
+    """This init function accepts the parameters and data for running the algorithm before executing the steps to train
+    a model, test against the testing dataset and output the results.
 
+    Args:
+        X_train                  (pandas DataFrame): This contains the input training data
+        y_train                  (pandas DataFrame): This contains the output classifications for all
+                                                    training instances
+        hidden_layers_parameters (list): List containing the number of neurons to generate in the hidden layer
+        X_test                   (pandas DataFrame): This contains the input testing data
+        y_test                   (pandas DataFrame): This contains the output classifications for all
+                                                    testing instances
+        learning_rate            (float): Decides how fast with each step the weights and biases are adjusted when
+                                          trying to approach the minimum of the error function
+        epochs                   (int): This specifies how many times as part of training the training dataset will
+                                        be passed through the network, error calculated and backpropagated appropriately
+    """
     # Each sub list of network represents a layer in the network
-    # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias]
+    # The layer structure is layer[number_of_connections, connection_weights[], activations[], bias, error]
     network = []
-
-    learning_rate = .07
-
-    number_of_epochs = 500
 
     populate_input_layer(network, X_train)
     populate_hidden_layers(network, hidden_layers_parameters)
     populate_output_layer(network, y_train)
 
-    for epochs in range(number_of_epochs):
+    for epochs in range(epochs):
         sum_error = 0
         for index, row in X_train.iterrows():
             outputs = forward_propagation(network, row)
             calculate_error(network, index, y_train)
             update_network(network, learning_rate, row)
 
-            output_style =""
-            # print(outputs)
             if np.argmax(outputs) == 0:
-                output_style ="ale" 
+                output_style = "ale"
             elif np.argmax(outputs) == 1:
-                output_style ="lager"
+                output_style = "lager"
             else:
-                output_style ="stout"
+                output_style = "stout"
 
             actual = y_train.loc[index].idxmax()
             if actual != output_style:
-                sum_error+=1
-        print('>epoch=%d, lrate=%.3f, error=%.3f' % (epochs, learning_rate, sum_error))
+                sum_error += 1
+
+        print("Epoch: " + str(epochs) + "\t Error: " + str(sum_error))
 
     number_of_training_examples = 0
     number_correct = 0
@@ -53,21 +62,28 @@ def init(X_train, y_train, hidden_layers_parameters, X_test, y_test):
         else:
             correct_boolean = False
         print("Expected = " + predicted + " Actual = " + actual + " Are same: " + str(correct_boolean))
+    print("Learning Rate: " + str(learning_rate))
     print("Accuracy: " + str(number_correct/number_of_training_examples * 100))
 
 
 def update_network(network, learning_rate, row):
+    """Updates the network layers, weights and biases having calculated the error
 
+    Args:
+        network                  (list): This series of embedded lists represents the network
+        learning_rate            (int):  This value affects how quickly the change in weight is applied
+        row                      (pandas Series): This contains the input row on the current iteration of training, the
+                                                  input values are required for adjusting the weight of connections in
+                                                  the first hidden layer
+    """
     # Adjusting weights for hidden layer
     for neurons in range(network[1][0]):
         for connections in range(network[0][0]):
-            row_value = row[connections]
             # Updating connection weight in hidden layer
             # Existing weight plus (learning rate * calculated error for neuron * value from output layer)
             network[1][1][neurons][connections] = network[1][1][neurons][connections] + (learning_rate * network[1][4][neurons] * row[connections])
         # Updating the bias weight adding to existing bias + (learning rate * calculated error for neuron)
         network[1][3][neurons] = network[1][3][neurons] + (learning_rate * network[1][4][neurons])
-
 
     # Adjusting weights for output layer
     for neurons in range(network[-1][0]):
@@ -79,6 +95,15 @@ def update_network(network, learning_rate, row):
 
 
 def calculate_error(network, index, y_train):
+    """Calculates the error for the output layer and also backpropagates error to the hidden layer
+
+    Args:
+        network                  (list): This series of embedded lists represents the network
+        index                    (int):  The index allows the actual classification for the training row to be retrieved
+                                         from y_train
+        y_train                  (pandas DataFrame): The lists contain the actual output classifications for all
+                                                    training instances
+    """
     # Calculate output layer errors
     number_output_neurons = network[-1][0]
     output_layer_errors = []
@@ -89,7 +114,6 @@ def calculate_error(network, index, y_train):
         output_layer_errors.append(error)
     # Setting error for each of output layer neurons
     network[-1][4] = output_layer_errors
-
 
     # Backpropagation of error for hidden layer
     hidden_layer_errors = []
@@ -113,7 +137,7 @@ def populate_input_layer(network, X_train):
 
     Args:
         network                  (list): This series of embedded lists represents the network
-        X_train                  (pandas DataFrame): The lists contain the actual input training data
+        X_train                  (pandas DataFrame): This contains the actual input training data
     """
     features = []
     for value in X_train:
@@ -123,6 +147,14 @@ def populate_input_layer(network, X_train):
 
 
 def model_prediction(network, y_test):
+    """Returns the prediction by the trained model having passed through a test data row
+
+    Args:
+        network                  (list): This series of embedded lists represents the network
+        y_test                   (pandas DataFrame): The lists contain the actual output classifications for all
+                                        testing instances
+
+    """
     max_activation = max(network[-1][2])
     index_of_max_activation = network[-1][2].index(max_activation)
     prediction = y_test.columns[index_of_max_activation]
@@ -130,7 +162,7 @@ def model_prediction(network, y_test):
 
 
 def populate_hidden_layers(network, hidden_layers_parameters):
-    """Creates the hidden layers and calls populates the weights the weights accordingly
+    """Creates the hidden layers and calls populate_values to populate the weights accordingly
 
     Args:
         network                  (list): This series of embedded lists represents the network
@@ -148,19 +180,18 @@ def populate_output_layer(network, y_train):
     """Calculates the number of classes from the output of the training data and calls populate_values
 
     Args:
-        network                  (list): This series of embedded lists represents the networ
-        y_train                  (pandas DataFrame): The lists contain the actual output classifications for all training
-                                                instances
+        network                  (list): This series of embedded lists represents the network
+        y_train                  (pandas DataFrame): The lists contain the actual output classifications for all
+                                                    training instances
     """
-    classification_types = []
+    classification_types = set()
     for value in y_train:
-        if value not in classification_types:
-            classification_types.append(value)
+        classification_types.add(value)
     network.append(populate_values(network[-1][0], len(classification_types)))
 
 
 def populate_values(number_of_connections, number_of_neurons):
-    """Populates number of connections, connection weights, activations and bias in a list
+    """Populates number of connections, connection weights, activations and bias into the network
 
     Args:
         number_of_connections (int): This int specifies how many connections there are to each neuron
@@ -188,3 +219,65 @@ def populate_values(number_of_connections, number_of_neurons):
     layer.append([])
     return layer
 
+
+def activation(inputs, weights, bias):
+    """Summation of weights times inputs including bias to calculate activation of a neuron
+
+    Args:
+        inputs                   (pandas Series): This contains the input training data / activations depending on the
+                                                  activation is calculated for the input layer or a hidden layer
+        weights                  (list): The weights on connections for a neuron is provided in a list
+        bias                     (float): The bias provided is the bias for a specific neuron
+
+    Returns:
+        list: a list representing the layer containing a list with values assigned
+    """
+    outputs = bias
+    for i in range(len(weights)):
+        outputs += (weights[i] * inputs[i])
+    return outputs
+
+
+def sigmoid(x):
+    """Passes the supplied value through the non-linear sigmoid function
+
+    Args:
+        x                       (float): The x value is the input to the sigmoid function
+
+    Returns:
+        _                       (float): The output of the sigmoid function is returned
+    """
+    return 1/(1+math.exp(-x))
+
+
+def forward_propagation(network, inputs):
+    """Enumerates the network and sums the inputs, weights and biases before passing them through a non-linear
+    activation function to calculate the activation of neurons having passed an input through the network
+
+    Args:
+        network                  (list): This series of embedded lists represents the network
+        inputs                   (pandas Series / list): Depends on whether the inputs comes to the input layer or
+                                                         hidden layer
+    Returns:
+        inputs                   (list): This contains the calculated activations for neurons within the network
+    """
+    for index, layer in enumerate(network):
+        if index != 0:
+            activations = []
+            for index_second, neuron in enumerate(layer[1]):
+                neuron_activation = sigmoid(activation(inputs, neuron, layer[3][index_second]))
+                activations.append(neuron_activation)
+            inputs = activations
+            layer[2] = activations
+    return inputs
+
+
+def sigmoid_derivative(x):
+    """Derivative of the sigmoid function calculation
+    Args:
+        x                       (float): This value is passed through the sigmoid derivative
+
+    Returns:
+        _                       (float): This value is returned as the output of the calculation
+    """
+    return x * (1.0 - x)
