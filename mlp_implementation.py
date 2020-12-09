@@ -120,7 +120,7 @@ def update_network(network, learning_rate, row):
         network[-1][3][neurons] = network[-1][3][neurons] + (learning_rate * network[-1][4][neurons])
 
 
-# Lochlann & Jack
+# Lochlann O'Regan 17316753
 def calculate_error(network, index, y_train):
     """Calculates the error for the output layer and also backpropagates error to the hidden layer
 
@@ -271,7 +271,7 @@ def activation(inputs, weights, bias):
     return outputs
 
 
-# Jack Lynch 17370591
+# Lochlann O'Regan 17316753
 def sigmoid(x):
     """Passes the supplied value through the non-linear sigmoid function
 
@@ -307,7 +307,7 @@ def forward_propagation(network, inputs):
     return inputs
 
 
-# Jack Lynch 17370591
+# Lochlann O'Regan 17316753
 def sigmoid_derivative(x):
     """Derivative of the sigmoid function calculation
     Args:
