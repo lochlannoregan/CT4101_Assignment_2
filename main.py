@@ -14,6 +14,13 @@ from sklearn.preprocessing import StandardScaler
 
 # Jack Lynch 17370591
 def get_file_sep(file_name):
+    """gets the files separator
+    Args:
+        file_name              (string): the name of the file
+
+    Returns:
+        _                       (string): separator
+    """
     file_extension = file_name.split('.')[-1]
     if file_extension.lower() == "csv":
         return ','
@@ -23,7 +30,13 @@ def get_file_sep(file_name):
 
 # Jack Lynch 17370591
 def load_data(file):
+    """reads a file 
+    Args:
+        file                    (string): the path of a file
 
+    Returns:
+        _                       (dataframe): the data of the file 
+    """
     file_name = file.split('/')[-1] if "/" in file else file
 
     sep = get_file_sep(file_name)
@@ -37,8 +50,14 @@ def load_data(file):
     return data
 
 
-# Jack Lynch 17370591
 def manipulate_data(data):
+    """manipulate the data, randomly splits the data into training and testing data, and then splits into features and target
+    Args:
+        data                    (dataframe): the data of a file
+
+    Returns:
+        _                       (Tuple): the data's features and target, for training and testing
+    """
     # Partition Data into training and testing
     # length of beer random numbers, random uniform distribution 0-1
     # condition < 0.66, returns true for numbers less than .66
@@ -60,7 +79,11 @@ def manipulate_data(data):
 
 # Jack Lynch 17370591
 def reference_algorithm(X_train, y_train, X_test, y_test, output_file):
-    
+    """reference algorithm using Scikit-learn
+    Args:
+        _                       (Tuple): the data's features and target, for training and testing
+
+    """
     # Apply Standard scaling to get better results
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
@@ -84,6 +107,14 @@ def reference_algorithm(X_train, y_train, X_test, y_test, output_file):
 
 # Lochlann O'Regan 17316753
 def implementation_algorithm(X_train, y_train, X_test, y_test, output_file):
+    """implementation algorithm 
+    Args:
+        _                       (Tuple): the data's features and target, for training and testing
+
+    Returns:
+        _                       (float): the models accuracy
+
+    """
     normalized_X_train = (X_train - X_train.min()) / (X_train.max() - X_train.min())
 
     normalized_X_test = (X_test - X_test.min()) / (X_test.max() - X_test.min())
@@ -103,7 +134,13 @@ def implementation_algorithm(X_train, y_train, X_test, y_test, output_file):
 
 # Jack Lynch 17370591
 def graph_model_accuracy(accuracies):
+    """Graph of the accuracy over the 10 runs 
+    Args:
+        accuracies              (list): the values of the accuracy for each epoch
 
+    Saves:
+        _                       (Fig): This is the Graph of the accuracies
+    """
     x = list(range(1, 11))
     y = accuracies
 
@@ -127,7 +164,11 @@ def graph_model_accuracy(accuracies):
 
 # Jack Lynch 17370591
 def run(data): 
+    """ runs the implementation algorithm and reference algorithm, 10 times. also opens and writes to the output file 
+    Args:
+        data                    (dataframe): the data of a file
 
+    """
     output_file_path = './data/data_output.txt'
     output_file = open(output_file_path, "w")
     output_file.write(str(datetime.datetime.now()) + "\n")
@@ -171,7 +212,11 @@ def run(data):
 
 # Jack Lynch 17370591
 def main():
-   
+    """ Main function, loads data froma file and passes the data to th erun function
+    Optional Args:
+        argv                    (string): the path of a file
+
+    """
     usage = "usage: main.py <file path>"
 
     input_file = ""
