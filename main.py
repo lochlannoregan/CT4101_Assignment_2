@@ -50,6 +50,7 @@ def load_data(file):
     return data
 
 
+# Jack Lynch 17370591
 def manipulate_data(data):
     """manipulate the data, randomly splits the data into training and testing data, and then splits into features and target
     Args:
